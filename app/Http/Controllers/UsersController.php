@@ -8,6 +8,17 @@ use Illuminate\Support\Facades\Auth;
 
 class UsersController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth', [
+            'except' => ['show', 'create', 'store']
+        ]);
+
+        $this->middleware('guest', [
+            'only' => ['create']
+        ]);
+    }
+
     //
     public function create()
     {
@@ -29,7 +40,8 @@ class UsersController extends Controller
 
         if (Auth::attempt($crendentials, $request->has('rember'))) {
             session()->flash('success', '欢迎回来！');
-            return redirect()->route('users.show', [Auth::user()]);
+            $fallback = route('users.show', [Auth::user()]);
+            return redirect()->intended($fallback);
         } else {
             session()->flase('danger', '很抱歉，您的邮箱和密码不匹配');
             return redirect()->back()->withInput();
@@ -38,11 +50,13 @@ class UsersController extends Controller
 
     public function edit(User $user)
     {
+        $this->authorize('update', $user);
         return view('users.edit', compact('user'));
     }
 
     public function update(User $user, Request $request)
     {
+        $this->authorize('update', $user);
         $this->validate($request, [
             'name' => 'required|max:50',
             'password' => 'nullable|confirmed|min:6'
