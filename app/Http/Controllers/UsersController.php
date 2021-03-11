@@ -21,27 +21,18 @@ class UsersController extends Controller
 
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $crendentials = $this->validate($request, [
             'name' => 'required|unique:users|max:50',
             'email' => 'required|email|unique:users|max:255',
             'password' => 'required|confirmed|min:6'
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password)
-        ]);
-
-        Auth::login();
-        session()->flash('success', '欢迎，您将在这里开启一段新的旅程~');
-        return redirect()->route('users.show', [$user]);
-    }
-
-    public function destory()
-    {
-        Auth::logout();
-        session()->flash('success', '您已成功退出！');
-        return redirect('login');
+        if (Auth::attempt($crendentials, $request->has('rember'))) {
+            session()->flash('success', '欢迎回来！');
+            return redirect()->route('users.show', [Auth::user()]);
+        } else {
+            session()->flase('danger', '很抱歉，您的邮箱和密码不匹配');
+            return redirect()->back()->withInput();
+        }
     }
 }
