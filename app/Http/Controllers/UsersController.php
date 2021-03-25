@@ -19,6 +19,12 @@ class UsersController extends Controller
         ]);
     }
 
+    public function index()
+    {
+        $users = User::paginate(6);
+        return view('users.index', compact('users'));
+    }
+
     //
     public function create()
     {
@@ -32,20 +38,19 @@ class UsersController extends Controller
 
     public function store(Request $request)
     {
-        $crendentials = $this->validate($request, [
+        $this->validate($request, [
             'name' => 'required|unique:users|max:50',
             'email' => 'required|email|unique:users|max:255',
             'password' => 'required|confirmed|min:6'
         ]);
 
-        if (Auth::attempt($crendentials, $request->has('rember'))) {
-            session()->flash('success', '欢迎回来！');
-            $fallback = route('users.show', [Auth::user()]);
-            return redirect()->intended($fallback);
-        } else {
-            session()->flase('danger', '很抱歉，您的邮箱和密码不匹配');
-            return redirect()->back()->withInput();
-        }
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+        ]);
+
+        return redirect()->route('users.show', [$user]);
     }
 
     public function edit(User $user)
