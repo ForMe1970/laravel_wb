@@ -52,7 +52,7 @@ class User extends Authenticatable
     {
         $hash = md5(strtolower(trim($this->attributes['email'])));
         //http://www.gravatar.com/avatar/$hash?s=$size
-        return "./img/1.jpg";
+        return "http://laravel_wb.com/img/1.jpg";
     }
 
     public static function boot()
