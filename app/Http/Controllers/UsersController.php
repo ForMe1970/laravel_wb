@@ -122,4 +122,25 @@ class UsersController extends Controller
             $message->from($from, $name)->to($to)->subject($subject);
         });
     }
+
+    public function follow($user_ids)
+    {
+        if ( ! is_array($user_ids)) {
+            $user_ids = compact('user_ids');
+        }
+        $this->followings()->sync($user_ids, false);
+    }
+
+    public function unfollow($user_ids)
+    {
+        if ( ! is_array($user_ids)) {
+            $user_ids = compact('user_ids');
+        }
+        $this->followings()->detach($user_ids);
+    }
+
+    public function isFollowing($user_id)
+    {
+        return $this->followings()->contains($user_id);
+    }
 }

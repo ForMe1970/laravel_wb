@@ -48,6 +48,17 @@ class User extends Authenticatable
         return $this->hasMany(Status::class);
     }
 
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, 'followers', 'user_id', 'follower_id');
+    }
+
+    public function followings()
+    {
+
+        return $this->belongsToMany(User::class, 'followers', 'follower_id', 'user_id');
+    }
+
     public function gravatar($size = '100')
     {
         $hash = md5(strtolower(trim($this->attributes['email'])));
