@@ -123,24 +123,17 @@ class UsersController extends Controller
         });
     }
 
-    public function follow($user_ids)
+    public function followings(User $user)
     {
-        if ( ! is_array($user_ids)) {
-            $user_ids = compact('user_ids');
-        }
-        $this->followings()->sync($user_ids, false);
+        $users = $user->followings()->paginate(30);
+        $title = $user->name . '关注的人';
+        return view('users.show_follow', compact('users', 'title'));
     }
 
-    public function unfollow($user_ids)
+    public function followers(User $user)
     {
-        if ( ! is_array($user_ids)) {
-            $user_ids = compact('user_ids');
-        }
-        $this->followings()->detach($user_ids);
-    }
-
-    public function isFollowing($user_id)
-    {
-        return $this->followings()->contains($user_id);
+        $users = $user->followers()->paginate(30);
+        $title = $user->name . '的粉丝';
+        return view('users.show_follow', compact('users', 'title'));
     }
 }
