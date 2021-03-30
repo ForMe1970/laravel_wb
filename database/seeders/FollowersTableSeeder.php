@@ -22,11 +22,11 @@ class FollowersTableSeeder extends Seeder
         $follower_ids = $followers->pluck('id')->toArray();
 
         //关注除了1号用户以外的所有用户
-        $user->followers($follower_ids);
+        $user->follow($follower_ids);
 
         //除了1号用户意外所有用户都来关注1号用户
         foreach ($followers as $follower) {
-            $follower->followers($user_id);
+            $follower->follow($user_id);
         }
     }
 }
